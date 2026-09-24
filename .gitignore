@@ -1,0 +1,44 @@
+# ===== 密钥与隐私 =====
+.env
+.env.*
+!.env.example
+
+# ===== 数据与缓存 =====
+data/
+*.sqlite3
+*.sqlite3-journal
+
+# ===== 上传与生成 =====
+uploads/
+output/
+*.log
+
+# ===== Python =====
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# ===== uv =====
+.uvcache/
+.uv-cache/
+uv.lock
+
+# ===== pytest =====
+.pytest_cache/
+.pytest-tmp/
+pytest-cache-files-*/
+
+# ===== 编辑器 =====
+.vscode/*
+!.vscode/settings.json
+.idea/
+
+# ===== 临时探针文件 =====
+.probe/
+.tmpcheck/
+_*.py

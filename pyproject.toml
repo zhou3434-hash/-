@@ -1,0 +1,47 @@
+[project]
+name = "travel-assistant"
+version = "0.1.0"
+description = "旅行出行助手 —— 基于 DeepSeek 的旅游规划智能体（行程规划 / 费用预算 / 景点识图）"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "openai>=1.60",
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.34",
+    "pydantic>=2.9",
+    "pydantic-settings>=2.6",
+    "python-dotenv>=1.0",
+    "httpx>=0.27",
+    "rich>=13.9",
+    "python-multipart>=0.0.12",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3",
+    "pytest-asyncio>=0.24",
+]
+
+[project.scripts]
+travel = "travel_assistant.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# 说明：本机环境下 setuptools 构建（chmod 临时目录）会被沙箱拒绝，
+# 因此让 uv 只管理第三方依赖，不把本项目自身作为包安装。
+# 项目自身通过 PYTHONPATH=src 导入（见 README 与 run 脚本）。
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+pythonpath = ["src"]
+# 本机沙箱不允许写 %TEMP% 与 .pytest_cache，因此关闭缓存插件；
+# 临时目录的重定向见 tests/conftest.py
+addopts = "-p no:cacheprovider"

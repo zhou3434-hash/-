@@ -1,0 +1,52 @@
+
+  旅行出行助手已启动 →  http://127.0.0.1:8000
+  按 Ctrl+C 停止
+
+INFO:     127.0.0.1:54886 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54886 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54886 - "GET /api/memory?session_id=s-3f7069c126d2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54886 - "GET /api/cities HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54886 - "GET /api/sessions?limit=5&session_id=s-3f7069c126d2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54886 - "GET /api/history?session_id=s-3f7069c126d2&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64990 - "GET /api/history?session_id=web-default&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64990 - "GET /api/sessions?limit=5&session_id=web-default HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55598 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55598 - "DELETE /api/sessions/web-default HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64990 - "GET /api/sessions?limit=5 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64990 - "GET /api/history?session_id=web-default&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64990 - "GET /api/sessions?limit=5&session_id=web-default HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55598 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55598 - "GET /api/history?session_id=s-3f7069c126d2&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55598 - "GET /api/sessions?limit=5&session_id=s-3f7069c126d2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64990 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64990 - "DELETE /api/sessions/s-3f7069c126d2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64990 - "GET /api/sessions?limit=5 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61153 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61153 - "GET /api/memory HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53512 - "GET /api/sessions?limit=5 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49670 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51895 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51895 - "GET /api/memory?session_id=web-default HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64065 - "GET /api/sessions?limit=5&session_id=web-default HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61674 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63232 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63232 - "GET /api/memory?session_id=web-default HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50285 - "GET /api/sessions?limit=5&session_id=web-default HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54868 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57383 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57383 - "GET /api/memory?session_id=web-default HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59090 - "GET /api/sessions?limit=5&session_id=web-default HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59016 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59275 - "POST /api/session/new?keep=5&session_id=web-default HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59275 - "GET /api/sessions?limit=5&session_id=s-9ed948a8bb74 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59656 - "GET /api/memory?session_id=s-9ed948a8bb74 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63763 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58289 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58289 - "GET /api/memory?session_id=s-9ed948a8bb74 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51769 - "GET /api/sessions?limit=5&session_id=s-9ed948a8bb74 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50303 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50593 - "POST /api/upload HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50593 - "POST /api/chat HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50593 - "GET /api/memory?session_id=s-9ed948a8bb74 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52632 - "GET /api/sessions?limit=5&session_id=s-9ed948a8bb74 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52210 - "GET /api/health HTTP/1.1" 200 OK

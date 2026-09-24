@@ -1,0 +1,43 @@
+E:\deekseek-workplace\bookfindweb\src\travel_assistant\server.py:251: DeprecationWarning: 
+        on_event is deprecated, use lifespan event handlers instead.
+
+        Read more about it in the
+        [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+        
+  @app.on_event("shutdown")
+INFO:     Started server process [30680]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+2026-09-24 12:08:52,073 INFO httpx2: HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-09-24 12:08:54,626 INFO httpx2: HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-09-24 12:08:55,279 INFO travel_assistant.agent: 长期记忆已更新：['name']
+2026-09-24 12:09:30,070 INFO httpx2: HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-09-24 12:09:30,848 INFO httpx2: HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-09-24 12:10:29,348 INFO httpx2: HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-09-24 12:10:32,516 INFO httpx2: HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-09-24 12:10:38,113 INFO httpx2: HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-09-24 12:10:40,166 INFO travel_assistant.agent: 长期记忆已更新：['budget_total']
+2026-09-24 12:11:28,912 INFO httpx2: HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-09-24 12:11:33,668 INFO httpx: HTTP Request: GET https://geocoding-api.open-meteo.com/v1/search?name=%E5%A4%A7%E8%BF%9E&count=1&language=zh "HTTP/1.1 200 OK"
+2026-09-24 12:11:36,260 INFO httpx: HTTP Request: GET https://api.open-meteo.com/v1/forecast?latitude=25.09238&longitude=116.68508&current=temperature_2m%2Crelative_humidity_2m%2Cweather_code%2Cwind_speed_10m&daily=weather_code%2Ctemperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_probability_max%2Cprecipitation_sum%2Cwind_speed_10m_max&timezone=auto&forecast_days=5 "HTTP/1.1 200 OK"
+2026-09-24 12:11:36,518 INFO httpx2: HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-09-24 12:11:38,353 INFO httpx2: HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-09-24 12:11:39,342 INFO httpx2: HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-09-24 12:11:41,250 INFO httpx2: HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-09-24 12:11:43,620 INFO httpx: HTTP Request: GET https://api.open-meteo.com/v1/forecast?latitude=38.914&longitude=121.6147&current=temperature_2m%2Crelative_humidity_2m%2Cweather_code%2Cwind_speed_10m&daily=weather_code%2Ctemperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_probability_max%2Cprecipitation_sum%2Cwind_speed_10m_max&timezone=auto&forecast_days=5 "HTTP/1.1 200 OK"
+2026-09-24 12:11:43,912 INFO httpx2: HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-09-24 12:11:55,297 INFO httpx2: HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-09-24 12:12:08,427 INFO travel_assistant.agent: 长期记忆已更新：['home_city', 'companions']
+2026-09-24 12:13:50,424 INFO httpx2: HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-09-24 12:13:55,954 INFO httpx2: HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-09-24 12:14:00,408 INFO httpx: HTTP Request: GET https://api.open-meteo.com/v1/forecast?latitude=39.9042&longitude=116.4074&current=temperature_2m%2Crelative_humidity_2m%2Cweather_code%2Cwind_speed_10m&daily=weather_code%2Ctemperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_probability_max%2Cprecipitation_sum%2Cwind_speed_10m_max&timezone=auto&forecast_days=5 "HTTP/1.1 200 OK"
+2026-09-24 12:14:02,388 INFO httpx: HTTP Request: GET https://api.open-meteo.com/v1/forecast?latitude=36.0671&longitude=120.3826&current=temperature_2m%2Crelative_humidity_2m%2Cweather_code%2Cwind_speed_10m&daily=weather_code%2Ctemperature_2m_max%2Ctemperature_2m_min%2Cprecipitation_probability_max%2Cprecipitation_sum%2Cwind_speed_10m_max&timezone=auto&forecast_days=5 "HTTP/1.1 200 OK"
+2026-09-24 12:14:02,568 INFO httpx2: HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-09-24 12:14:07,908 INFO httpx2: HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-09-24 12:14:17,448 INFO httpx2: HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-09-24 12:14:18,688 INFO travel_assistant.agent: 长期记忆已更新：['companions']
+2026-09-24 12:15:17,610 INFO httpx2: HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-09-24 12:15:18,793 INFO httpx2: HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-09-24 12:15:21,184 INFO httpx2: HTTP Request: POST https://api.deepseek.com/chat/completions "HTTP/1.1 200 OK"
+2026-09-24 12:15:25,003 INFO travel_assistant.agent: 长期记忆已更新：['companions']

@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>旅行出行助手</title>
+<style>
+  :root{
+    /* 白底 + 橙 + 蓝 */
+    --bg:#f7f9fc;
+    --panel:#ffffff;
+    --panel-soft:#f4f7fb;
+    --line:#e4eaf2;
+    --line-strong:#d3dce8;
+    --tx:#1f2a37;
+    --tx-soft:#5b6b80;
+    --tx-dim:#93a1b3;
+    --orange:#f5731f;
+    --orange-soft:#fff3ea;
+    --orange-line:#ffd9bd;
+    --blue:#2f6fed;
+    --blue-soft:#eef4ff;
+    --blue-line:#cfe0ff;
+    --green:#12a37a;
+    --red:#df4b45;
+    --red-soft:#fdeceb;
+    --purple:#7a5af5;
+    --shadow:0 1px 2px rgba(31,42,55,.04), 0 4px 16px rgba(31,42,55,.05);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--tx);overflow:hidden;
+    font:15px/1.65 -apple-system,"Segoe UI","Microsoft YaHei",Helvetica,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  .app{display:flex;height:100vh}
+
+  /* ================= 侧栏 ================= */
+  aside{width:296px;flex:0 0 296px;background:var(--panel);border-right:1px solid var(--line);
+    display:flex;flex-direction:column;min-height:0}
+
+  .brand{padding:18px 18px 14px;border-bottom:1px solid var(--line)}
+  .brand h1{margin:0;font-size:16px;font-weight:650;letter-spacing:.2px;display:flex;align-items:center;gap:8px}
+  .brand h1::before{content:"";width:9px;height:9px;border-radius:50%;
+    background:linear-gradient(135deg,var(--orange),var(--blue))}
+  .brand p{margin:3px 0 0;font-size:12px;color:var(--tx-dim)}
+
+  .side-scroll{flex:1;overflow-y:auto;min-height:0}
+
+  /* 新建对话（占据原「长期记忆」位置） */
+  .newchat{padding:14px 18px 14px}
+  .newchat button{width:100%;border:none;border-radius:11px;cursor:pointer;
+    padding:12px 14px;font:inherit;font-weight:600;color:#fff;
+    background:linear-gradient(135deg,var(--orange),#ff9147);
+    box-shadow:0 3px 10px rgba(245,115,31,.24);transition:.15s}
+  .newchat button:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(245,115,31,.3)}
+  .newchat button:active{transform:translateY(0)}
+  .newchat button span{font-weight:400;opacity:.9;font-size:12.5px;margin-left:6px}
+
+  .sec{padding:0 18px 16px}
+  .sec + .sec{border-top:1px solid var(--line);padding-top:15px}
+  .sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+  .sec-head h2{margin:0;font-size:11.5px;font-weight:650;color:var(--tx-dim);
+    text-transform:uppercase;letter-spacing:.9px}
+  .sec-head button{background:none;border:none;color:var(--tx-dim);font-size:11.5px;
+    cursor:pointer;padding:2px 4px;border-radius:5px}
+  .sec-head button:hover{color:var(--red);background:var(--red-soft)}
+
+  /* 会话列表 */
+  .conv{display:flex;align-items:flex-start;gap:8px;padding:9px 10px;border-radius:9px;
+    cursor:pointer;border:1px solid transparent;transition:.12s;margin-bottom:2px}
+  .conv:hover{background:var(--panel-soft)}
+  .conv.on{background:var(--blue-soft);border-color:var(--blue-line)}
+  .conv .dot{flex:0 0 7px;height:7px;border-radius:50%;background:var(--line-strong);margin-top:7px}
+  .conv.on .dot{background:var(--blue)}
+  .conv .txt{flex:1;min-width:0}
+  .conv .t{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .conv .m{font-size:11.5px;color:var(--tx-dim);white-space:nowrap;overflow:hidden;
+    text-overflow:ellipsis;margin-top:1px}
+  .conv .x{flex:0 0 auto;color:transparent;font-size:12px;padding:0 2px;line-height:1.2}
+  .conv:hover .x{color:var(--tx-dim)}
+  .conv .x:hover{color:var(--red)}
+
+  .mem{display:flex;gap:8px;font-size:12.5px;padding:5px 0;line-height:1.5}
+  .mem .k{flex:0 0 76px;color:var(--tx-dim)}
+  .mem .v{flex:1;min-width:0;word-break:break-word;color:var(--tx)}
+  .mem .del{color:transparent;cursor:pointer;font-size:11px;align-self:flex-start}
+  .mem:hover .del{color:var(--tx-dim)}
+  .mem .del:hover{color:var(--red)}
+
+  .empty{color:var(--tx-dim);font-size:12px;line-height:1.6}
+
+  /* 折叠的城市列表 */
+  details.citybox{border:none}
+  details.citybox > summary{list-style:none;cursor:pointer;display:flex;align-items:center;
+    gap:6px;font-size:11.5px;font-weight:650;color:var(--tx-dim);
+    text-transform:uppercase;letter-spacing:.9px;padding:0;margin-bottom:0}
+  details.citybox > summary::-webkit-details-marker{display:none}
+  details.citybox > summary::before{content:"▸";font-size:11px;transition:.15s;color:var(--tx-dim)}
+  details.citybox[open] > summary::before{transform:rotate(90deg)}
+  details.citybox > summary:hover{color:var(--tx-soft)}
+  .citywrap{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px}
+  .chip{font-size:12px;padding:3px 9px;border-radius:999px;background:var(--panel-soft);
+    border:1px solid var(--line);color:var(--tx-soft);cursor:default;white-space:nowrap}
+  .chip b{color:var(--blue);font-weight:600;margin-left:4px}
+  .chip:hover{background:var(--blue-soft);border-color:var(--blue-line);color:var(--blue)}
+
+  /* ================= 主区 ================= */
+  main{flex:1;display:flex;flex-direction:column;min-width:0;min-height:0}
+  header{padding:13px 24px;border-bottom:1px solid var(--line);background:var(--panel);
+    display:flex;align-items:center;gap:12px;box-shadow:var(--shadow);z-index:2}
+  header .ttl{font-weight:600;font-size:14.5px}
+  header .meta{margin-left:auto;color:var(--tx-dim);font-size:12px;text-align:right;line-height:1.45}
+
+  #offline{display:none;background:var(--red-soft);border-bottom:1px solid #f6c9c6;
+    padding:9px 24px;font-size:13px;color:#a52a24}
+  #offline span{margin-left:8px;text-decoration:underline;cursor:pointer;font-weight:600}
+
+  #chat{flex:1;overflow-y:auto;padding:24px 24px 8px;min-height:0;scroll-behavior:smooth}
+  .msg{max-width:880px;margin:0 auto 18px;display:flex;gap:11px}
+  .avatar{flex:0 0 32px;height:32px;border-radius:9px;display:grid;place-items:center;
+    font-size:13px;font-weight:600;user-select:none}
+  .msg.user .avatar{background:var(--blue-soft);color:var(--blue);border:1px solid var(--blue-line)}
+  .msg.bot .avatar{background:var(--orange-soft);color:var(--orange);border:1px solid var(--orange-line)}
+  .bubble{flex:1;min-width:0}
+  .who{font-size:11.5px;color:var(--tx-dim);margin-bottom:5px}
+  .body{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:13px 16px;overflow-wrap:break-word;box-shadow:var(--shadow);font-size:14.5px}
+  .msg.bot .body{border-left:3px solid var(--orange)}
+  .msg.user .body{background:var(--blue-soft);border-color:var(--blue-line);border-left:3px solid var(--blue)}
+  .body p{margin:.5em 0}
+  .body p:first-child{margin-top:0}
+  .body p:last-child{margin-bottom:0}
+  .body h1,.body h2,.body h3{font-size:15px;margin:1em 0 .4em;color:#16202c}
+  .body h1{font-size:16.5px}
+  .body ul,.body ol{margin:.4em 0;padding-left:1.35em}
+  .body li{margin:.18em 0}
+  .body code{background:var(--panel-soft);padding:1px 5px;border-radius:4px;font-size:13px;
+    border:1px solid var(--line)}
+  .body pre{background:var(--panel-soft);padding:11px;border-radius:8px;overflow-x:auto;
+    border:1px solid var(--line)}
+  .body pre code{background:none;border:none;padding:0}
+  .body table{border-collapse:collapse;margin:.6em 0;font-size:13.5px;width:100%}
+  .body th,.body td{border:1px solid var(--line);padding:6px 10px;text-align:left}
+  .body th{background:var(--panel-soft);font-weight:600}
+  .body a{color:var(--blue)}
+  .body hr{border:none;border-top:1px solid var(--line);margin:1em 0}
+  .body strong,.body b{color:#16202c}
+
+  .trace{margin:7px 0 0 42px;font-size:12px}
+  .trace summary{cursor:pointer;color:var(--tx-dim);outline:none}
+  .trace .row{display:flex;gap:8px;padding:3px 0;color:var(--tx-soft);align-items:baseline}
+  .trace .tn{color:var(--orange);font-family:ui-monospace,Consolas,monospace;font-size:11.5px;
+    flex:0 0 auto}
+  .trace .res{color:var(--tx-dim);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+  .vision{background:var(--orange-soft);border:1px solid var(--orange-line);border-radius:10px;
+    padding:11px 14px;margin:8px 0;font-size:13px;line-height:1.7}
+  .vision b{color:#c2521a}
+  .status{color:var(--tx-dim);font-size:12.5px}
+  .err{color:#a52a24;font-size:13px;background:var(--red-soft);border:1px solid #f6c9c6;
+    border-radius:9px;padding:10px 13px;line-height:1.65}
+
+  /* ================= 输入区 ================= */
+  footer{border-top:1px solid var(--line);background:var(--panel);padding:12px 24px 15px;
+    box-shadow:0 -1px 3px rgba(31,42,55,.03)}
+  .composer{max-width:880px;margin:0 auto}
+  .previews{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+  .thumb{position:relative;width:62px;height:62px;border-radius:9px;overflow:hidden;
+    border:1px solid var(--line)}
+  .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .thumb button{position:absolute;top:2px;right:2px;background:rgba(31,42,55,.75);border:none;
+    color:#fff;width:18px;height:18px;border-radius:50%;cursor:pointer;font-size:11px;
+    line-height:1;padding:0}
+  .inputrow{display:flex;gap:10px;align-items:flex-end}
+  textarea{flex:1;background:var(--panel);border:1px solid var(--line-strong);border-radius:11px;
+    color:var(--tx);padding:11px 14px;font:inherit;resize:none;max-height:170px;min-height:46px;
+    outline:none;transition:.15s;box-shadow:var(--shadow)}
+  textarea:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(245,115,31,.12)}
+  textarea::placeholder{color:var(--tx-dim)}
+  .btns{display:flex;gap:8px}
+  button.act{background:linear-gradient(135deg,var(--orange),#ff9147);border:none;color:#fff;
+    font-weight:600;padding:12px 20px;border-radius:11px;cursor:pointer;font-size:14px;
+    box-shadow:0 3px 10px rgba(245,115,31,.24);transition:.15s}
+  button.act:hover:not(:disabled){transform:translateY(-1px)}
+  button.act:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}
+  button.ghost{background:var(--panel);border:1px solid var(--line-strong);color:var(--tx-soft);
+    padding:12px 14px;border-radius:11px;cursor:pointer;font-size:14px;transition:.15s}
+  button.ghost:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-soft)}
+  .hint{color:var(--tx-dim);font-size:11.5px;margin-top:7px;text-align:center}
+  body.dragging{outline:3px dashed var(--orange);outline-offset:-10px;border-radius:14px}
+
+  /* 滚动条 */
+  ::-webkit-scrollbar{width:9px;height:9px}
+  ::-webkit-scrollbar-thumb{background:#d6dee9;border-radius:5px;border:2px solid var(--bg)}
+  ::-webkit-scrollbar-thumb:hover{background:#c2cddb}
+  ::-webkit-scrollbar-track{background:transparent}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <div class="brand">
+      <h1>旅行出行助手</h1>
+      <p>DeepSeek 驱动的旅游规划智能体</p>
+    </div>
+
+    <div class="side-scroll">
+      <!-- 新建对话：占据原「长期记忆」位置 -->
+      <div class="newchat">
+        <button id="newSession">＋ 新建对话<span>保留记忆</span></button>
+      </div>
+
+      <!-- 历史对话（最多 5 个） -->
+      <div class="sec">
+        <div class="sec-head">
+          <h2>历史对话</h2>
+          <span style="font-size:11px;color:var(--tx-dim)" id="convCount"></span>
+        </div>
+        <div id="convs"><div class="empty">还没有对话</div></div>
+      </div>
+
+      <!-- 长期记忆 -->
+      <div class="sec">
+        <div class="sec-head">
+          <h2>我的偏好</h2>
+          <button id="clearMem">清空</button>
+        </div>
+        <div id="memory"><div class="empty">加载中…</div></div>
+      </div>
+
+      <!-- 内置景点库：折叠，默认收起 -->
+      <div class="sec">
+        <details class="citybox" id="cityBox">
+          <summary>内置景点库 <span id="cityTotal" style="font-weight:400;text-transform:none;letter-spacing:0"></span></summary>
+          <div class="citywrap" id="cities"></div>
+        </details>
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <header>
+      <div class="ttl" id="convTitle">新对话</div>
+      <div class="meta" id="meta"></div>
+    </header>
+
+    <div id="offline">
+      ⚠ 后端服务已断开 —— 启动服务的窗口被关闭了。请重新运行
+      <b>启动网页.ps1</b>，然后刷新本页。
+      <span id="retry">立即重试连接</span>
+    </div>
+
+    <div id="chat"></div>
+
+    <footer>
+      <div class="composer">
+        <div class="previews" id="previews"></div>
+        <div class="inputrow">
+          <textarea id="input" rows="1"
+            placeholder="说说你的旅行计划…（Enter 发送，Shift+Enter 换行；可直接拖入景点图片）"></textarea>
+          <div class="btns">
+            <button class="ghost" id="pick" title="上传图片">图片</button>
+            <button class="act" id="send">发送</button>
+          </div>
+        </div>
+        <div class="hint">支持识别景点照片 · 例：帮我规划杭州3天 / 这张照片是哪里，怎么玩</div>
+      </div>
+      <input type="file" id="file" accept="image/*" multiple hidden>
+    </footer>
+  </main>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const chat = $('#chat');
+const MAX_CONV = 5;
+
+let SESSION = localStorage.getItem('ta_session') || null;
+let pending = [];
+let busy = false;
+let currentTitle = '新对话';
+
+const GREETING = `<p>你好，我是你的<strong>旅行出行助手</strong>。我可以：</p>
+  <ul>
+    <li><strong>规划出行方案</strong> —— 逐日行程、动线顺序、预约提醒</li>
+    <li><strong>推荐游玩措施</strong> —— 最佳时段、避坑提示、排队策略</li>
+    <li><strong>规划旅行费用</strong> —— 交通/住宿/餐饮/门票明细与总计</li>
+    <li><strong>识别景点照片</strong> —— 拖入图片，我告诉你这是哪、怎么玩</li>
+  </ul>
+  <p>我会记住你告诉我的偏好（常住城市、预算、同行人、忌口等），<strong>换新对话也不用重复说</strong>。</p>
+  <p>试试说：<em>我住上海，10月带爸妈去杭州玩3天，预算5000</em></p>`;
+
+/* ---------------- 基础 ---------------- */
+function esc(s){return (s||'').replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+function setConn(ok){
+  const bar = document.getElementById('offline');
+  if(bar) bar.style.display = ok ? 'none' : 'block';
+}
+
+/* 极简 Markdown 渲染 */
+function md(src){
+  let s = esc(src);
+  const blocks = [];
+  s = s.replace(/```([\s\S]*?)```/g, (m,c)=>{blocks.push('<pre><code>'+c.trim()+'</code></pre>');return '\u0000B'+(blocks.length-1)+'\u0000';});
+  const lines = s.split('\n'); const out=[]; let list=null, table=null;
+  const closeList=()=>{ if(list){out.push('</'+list+'>');list=null;} };
+  const closeTable=()=>{ if(table){out.push('</tbody></table>');table=null;} };
+  for(let i=0;i<lines.length;i++){
+    let L = lines[i];
+    if(/^\u0000B\d+\u0000$/.test(L.trim())){ closeList();closeTable(); out.push(L.trim()); continue; }
+    if(/^\s*\|(.+)\|\s*$/.test(L)){
+      const cells = L.trim().slice(1,-1).split('|').map(x=>x.trim());
+      if(/^[\s\-:|]+$/.test(L)) continue;
+      if(!table){ closeList(); out.push('<table><thead><tr>'+cells.map(c=>'<th>'+c+'</th>').join('')+'</tr></thead><tbody>'); table=true; }
+      else out.push('<tr>'+cells.map(c=>'<td>'+c+'</td>').join('')+'</tr>');
+      continue;
+    } else closeTable();
+    let h = L.match(/^(#{1,4})\s+(.*)$/);
+    if(h){ closeList(); out.push('<h'+h[1].length+'>'+h[2]+'</h'+h[1].length+'>'); continue; }
+    if(/^\s*[-*]\s+/.test(L)){ if(list!=='ul'){closeList();out.push('<ul>');list='ul';} out.push('<li>'+L.replace(/^\s*[-*]\s+/,'')+'</li>'); continue; }
+    if(/^\s*\d+[.)]\s+/.test(L)){ if(list!=='ol'){closeList();out.push('<ol>');list='ol';} out.push('<li>'+L.replace(/^\s*\d+[.)]\s+/,'')+'</li>'); continue; }
+    if(/^\s*(---|___|\*\*\*)\s*$/.test(L)){ closeList(); out.push('<hr>'); continue; }
+    if(!L.trim()){ closeList(); continue; }
+    closeList(); out.push('<p>'+L+'</p>');
+  }
+  closeList(); closeTable();
+  let html = out.join('\n');
+  html = html.replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>')
+             .replace(/(^|[^*])\*([^*\n]+)\*/g,'$1<i>$2</i>')
+             .replace(/`([^`]+)`/g,'<code>$1</code>')
+             .replace(/\[([^\]]+)\]\((https?:[^)]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>');
+  html = html.replace(/\u0000B(\d+)\u0000/g,(m,i)=>blocks[+i]);
+  return html;
+}
+
+function addMsg(who, html, cls){
+  const d = document.createElement('div');
+  d.className = 'msg ' + cls;
+  d.innerHTML = `<div class="avatar">${cls==='user'?'你':'游'}</div>
+    <div class="bubble"><div class="who">${who}</div><div class="body">${html}</div></div>`;
+  chat.appendChild(d); chat.scrollTop = chat.scrollHeight;
+  return d.querySelector('.body');
+}
+
+/* ---------------- 侧栏：历史对话 ---------------- */
+async function loadConvs(){
+  try{
+    const d = await (await fetch('/api/sessions?limit='+MAX_CONV+
+      (SESSION?('&session_id='+encodeURIComponent(SESSION)):''))).json();
+    const list = d.sessions || [];
+    $('#convCount').textContent = list.length + ' / ' + MAX_CONV;
+    const box = $('#convs');
+    if(!list.length){ box.innerHTML = '<div class="empty">还没有对话</div>'; return; }
+    box.innerHTML = list.map(s=>{
+      const on = s.id === SESSION ? ' on' : '';
+      const title = esc(s.title || '新对话');
+      const sub = s.preview ? esc(s.preview) : (s.msg_count ? s.msg_count+' 条消息' : '空对话');
+      return `<div class="conv${on}" data-id="${esc(s.id)}" data-title="${title}">
+        <div class="dot"></div>
+        <div class="txt"><div class="t">${title}</div><div class="m">${sub}</div></div>
+        <div class="x" data-del="${esc(s.id)}" title="删除这个对话">✕</div>
+      </div>`;
+    }).join('');
+    box.querySelectorAll('.conv').forEach(el=>{
+      el.onclick = (ev)=>{
+        if(ev.target.dataset.del) return;
+        openConv(el.dataset.id, el.dataset.title);
+      };
+    });
+    box.querySelectorAll('.x').forEach(x=>{
+      x.onclick = async (ev)=>{
+        ev.stopPropagation();
+        const id = x.dataset.del;
+        if(!confirm('删除这个对话？（长期记忆会保留）')) return;
+        await fetch('/api/sessions/'+encodeURIComponent(id), {method:'DELETE'});
+        if(id === SESSION){
+          SESSION = null; localStorage.removeItem('ta_session');
+          chat.innerHTML=''; currentTitle='新对话'; $('#convTitle').textContent = currentTitle;
+          addMsg('旅行出行助手', GREETING, 'bot');
+        }
+        loadConvs();
+      };
+    });
+  }catch(e){ $('#convs').innerHTML = '<div class="empty">读取失败</div>'; }
+}
+
+async function openConv(id, title){
+  SESSION = id; localStorage.setItem('ta_session', id);
+  currentTitle = title || '新对话';
+  $('#convTitle').textContent = currentTitle;
+  chat.innerHTML = '<div class="status" style="max-width:880px;margin:0 auto">正在载入对话…</div>';
+  try{
+    const d = await (await fetch('/api/history?session_id='+encodeURIComponent(id)+'&limit=100')).json();
+    chat.innerHTML = '';
+    const msgs = d.messages || [];
+    if(!msgs.length){ addMsg('旅行出行助手', GREETING, 'bot'); }
+    else {
+      for(const m of msgs){
+        addMsg(m.role === 'user' ? '你' : '旅行出行助手',
+               m.role === 'user' ? md(m.content) : md(m.content),
+               m.role === 'user' ? 'user' : 'bot');
+      }
+    }
+    chat.scrollTop = chat.scrollHeight;
+  }catch(e){
+    chat.innerHTML = '';
+    addMsg('旅行出行助手', '<div class="err">载入历史失败：'+esc(String(e))+'</div>', 'bot');
+  }
+  loadConvs(); loadMeta();
+}
+
+/* ---------------- 侧栏：其他 ---------------- */
+async function loadMemory(){
+  try{
+    const r = await fetch('/api/memory'+(SESSION?('?session_id='+encodeURIComponent(SESSION)):''));
+    const d = await r.json();
+    if(d.session_id){ SESSION = d.session_id; localStorage.setItem('ta_session', SESSION); }
+    const el = $('#memory');
+    const keys = Object.keys(d.profile || {});
+    if(!keys.length){
+      el.innerHTML = '<div class="empty">还没有记忆。随着对话进行，我会自动记住你的偏好。</div>';
+      return;
+    }
+    el.innerHTML = keys.map(k=>`<div class="mem-item mem">
+      <span class="k">${esc(d.labels[k]||k)}</span>
+      <span class="v">${esc(d.profile[k])}</span>
+      <span class="del" data-k="${esc(k)}" title="删除">✕</span></div>`).join('');
+    el.querySelectorAll('.del').forEach(b=>b.onclick=async()=>{
+      await fetch('/api/memory?key='+encodeURIComponent(b.dataset.k), {method:'DELETE'});
+      loadMemory();
+    });
+  }catch(e){ $('#memory').innerHTML = '<div class="empty">读取失败</div>'; }
+}
+
+async function loadCities(){
+  try{
+    const d = await (await fetch('/api/cities')).json();
+    $('#cityTotal').textContent = '（'+d.cities.length+' 城市 · '+d.total+' 景点）';
+    $('#cities').innerHTML = d.cities.map(c=>
+      `<span class="chip" title="${esc(c.attractions.join('、'))}">${esc(c.city)}<b>${c.count}</b></span>`
+    ).join('');
+  }catch(e){}
+}
+
+async function loadMeta(){
+  try{
+    const d = await (await fetch('/api/health')).json();
+    setConn(true);
+    $('#meta').innerHTML = `${esc(d.model)} · ${d.cities.length} 城市 · ${d.attractions} 景点<br>
+      ${esc(SESSION||'-')}`;
+  }catch(e){ setConn(false); }
+}
+
+/* ---------------- 图片 ---------------- */
+async function addFiles(files){
+  for(const f of files){
+    if(!f.type.startsWith('image/')) continue;
+    const fd = new FormData(); fd.append('file', f);
+    try{
+      const d = await (await fetch('/api/upload', {method:'POST', body:fd})).json();
+      if(d.name) pending.push({name:d.name, preview:d.preview, label:f.name});
+    }catch(e){ console.warn('上传失败', e); }
+  }
+  renderPreviews();
+}
+
+function renderPreviews(){
+  $('#previews').innerHTML = pending.map((p,i)=>
+    `<div class="thumb"><img src="${p.preview}" title="${esc(p.label)}">
+     <button data-i="${i}">✕</button></div>`).join('');
+  $('#previews').querySelectorAll('button').forEach(b=>b.onclick=()=>{
+    pending.splice(+b.dataset.i,1); renderPreviews();
+  });
+}
+
+/* ---------------- 发送 ---------------- */
+async function send(){
+  if(busy) return;
+  const text = $('#input').value.trim();
+  if(!text && !pending.length) return;
+
+  busy = true; $('#send').disabled = true;
+  const imgs = pending.slice(); pending = []; renderPreviews();
+
+  const userHtml = (imgs.length? imgs.map(i=>`<img src="${i.preview}" style="max-width:150px;border-radius:9px;margin:4px 0;display:block">`).join('') : '')
+                 + (text? md(text) : '<i>（发送了图片）</i>');
+  addMsg('你', userHtml, 'user');
+  if(currentTitle === '新对话' && text){ currentTitle = text.slice(0,24); $('#convTitle').textContent = currentTitle; }
+  $('#input').value = ''; autoGrow();
+
+  const body = addMsg('旅行出行助手', '<span class="status">正在思考…</span>', 'bot');
+  const trace = document.createElement('div'); trace.className = 'trace';
+  body.parentElement.appendChild(trace);
+
+  let finalMd = '', visionHtml = '', errMsg = '';
+  const toolRows = [];
+
+  try{
+    let resp;
+    try{
+      resp = await fetch('/api/chat', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({message:text, session_id:SESSION, image_names:imgs.map(i=>i.name)})
+      });
+    }catch(netErr){
+      errMsg = '无法连接后端服务（' + netErr.message + '）。\n'
+             + '原因：后端服务没有在运行。\n'
+             + '解决：运行「启动网页.ps1」，然后刷新本页（F5）。';
+      setConn(false);
+      throw netErr;
+    }
+    if(!resp.ok){
+      let detail=''; try{ detail = (await resp.text()).slice(0,300); }catch(e){}
+      errMsg = '后端返回 HTTP ' + resp.status + '。' + (detail? '详情：'+detail : '');
+      throw new Error(errMsg);
+    }
+    const reader = resp.body.getReader(); const dec = new TextDecoder();
+    let buf = '';
+    while(true){
+      const {done, value} = await reader.read(); if(done) break;
+      buf += dec.decode(value, {stream:true});
+      const parts = buf.split('\n\n'); buf = parts.pop();
+      for(const p of parts){
+        if(!p.startsWith('data: ')) continue;
+        let ev; try{ ev = JSON.parse(p.slice(6)); }catch(e){ continue; }
+        if(ev.type === 'status'){
+          body.innerHTML = `<span class="status">${esc(ev.text)}…</span>`;
+        } else if(ev.type === 'vision'){
+          const r = ev.result;
+          visionHtml = `<div class="vision"><b>图片识别</b>　${esc(r.scene_type)}　置信度 ${esc(r.confidence)}<br>
+            <b>地标：</b>${esc((r.landmarks||[]).join('、')||'未确定')}<br>
+            <b>地区：</b>${esc([r.country,r.region,r.city].filter(Boolean).join(' · ')||'未知')}<br>
+            ${esc(r.description||'')}</div>`;
+          body.innerHTML = visionHtml + '<span class="status">正在规划…</span>';
+        } else if(ev.type === 'tool_call'){
+          toolRows.push({name:ev.name, args:ev.args, res:''});
+          renderTrace();
+        } else if(ev.type === 'tool_result'){
+          const t = [...toolRows].reverse().find(x=>x.name===ev.name && !x.res);
+          if(t) t.res = (ev.summary||'').split('\n')[0];
+          renderTrace();
+        } else if(ev.type === 'final'){
+          finalMd = ev.content;
+        } else if(ev.type === 'error'){
+          errMsg = ev.message;
+        }
+      }
+    }
+  }catch(e){ if(!errMsg) errMsg = String(e); }
+
+  let html = visionHtml;
+  if(errMsg) html += `<div class="err">${esc(errMsg).replace(/\n/g,'<br>')}</div>`;
+  if(finalMd) html += md(finalMd);
+  if(!finalMd && !errMsg) html += '<span class="status">没有收到回复，请重试</span>';
+  body.innerHTML = html;
+
+  function renderTrace(){
+    if(!toolRows.length){ trace.innerHTML=''; return; }
+    trace.innerHTML = '<details><summary>工具调用轨迹（'+toolRows.length+'）</summary>' +
+      toolRows.map(t=>`<div class="row"><span class="tn">${esc(t.name)}</span>
+        <span class="res">${esc(t.res?('✓ '+t.res):JSON.stringify(t.args||{}))}</span></div>`).join('') +
+      '</details>';
+  }
+
+  busy = false; $('#send').disabled = false;
+  loadMemory(); loadConvs(); loadMeta();
+}
+
+/* ---------------- 事件 ---------------- */
+function autoGrow(){ const t=$('#input'); t.style.height='auto'; t.style.height=Math.min(t.scrollHeight,170)+'px'; }
+$('#input').addEventListener('input', autoGrow);
+$('#input').addEventListener('keydown', e=>{
+  if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); send(); }
+});
+$('#send').onclick = send;
+$('#pick').onclick = ()=> $('#file').click();
+$('#file').onchange = e => { addFiles(e.target.files); e.target.value=''; };
+
+document.addEventListener('dragover', e=>{ e.preventDefault(); document.body.classList.add('dragging'); });
+document.addEventListener('dragleave', e=>{ if(e.relatedTarget===null) document.body.classList.remove('dragging'); });
+document.addEventListener('drop', e=>{
+  e.preventDefault(); document.body.classList.remove('dragging');
+  if(e.dataTransfer?.files?.length) addFiles(e.dataTransfer.files);
+});
+document.addEventListener('paste', e=>{
+  const items = [...(e.clipboardData?.items||[])].filter(i=>i.type.startsWith('image/'));
+  if(items.length) addFiles(items.map(i=>i.getAsFile()).filter(Boolean));
+});
+
+/* 新建对话：最多保留 MAX_CONV 个，长期记忆不受影响 */
+$('#newSession').onclick = async ()=>{
+  if(busy) return;
+  try{
+    const d = await (await fetch('/api/session/new?keep='+MAX_CONV+
+      (SESSION?('&session_id='+encodeURIComponent(SESSION)):''), {method:'POST'})).json();
+    SESSION = d.session_id; localStorage.setItem('ta_session', SESSION);
+    if((d.removed||[]).length){
+      console.info('已自动清理旧对话：', d.removed);
+    }
+  }catch(e){
+    console.warn('新建对话失败，退回本地新会话：', e);
+    SESSION = null; localStorage.removeItem('ta_session');
+  }
+  chat.innerHTML=''; currentTitle='新对话'; $('#convTitle').textContent = currentTitle;
+  addMsg('旅行出行助手', GREETING, 'bot');
+  loadConvs(); loadMemory(); loadMeta();
+};
+
+$('#clearMem').onclick = async ()=>{
+  if(!confirm('清空全部长期记忆？（历史对话不受影响）')) return;
+  await fetch('/api/memory'+(SESSION?('?session_id='+encodeURIComponent(SESSION)):''), {method:'DELETE'});
+  loadMemory();
+};
+
+/* ---------------- 初始化 ---------------- */
+(function initConnWatch(){
+  const btn = document.getElementById('retry');
+  if(btn) btn.onclick = () => { loadMeta(); loadMemory(); loadConvs(); };
+  setInterval(() => { if(document.getElementById('offline')?.style.display !== 'none') loadMeta(); }, 10000);
+})();
+
+(async function init(){
+  await loadMeta();
+  await loadMemory();     // 会补上 SESSION
+  await loadCities();
+  await loadConvs();      // 需要在拿到 SESSION 之后
+  // 恢复上次的对话；没有就展示欢迎语
+  if(SESSION){
+    const d = await (await fetch('/api/history?session_id='+encodeURIComponent(SESSION)+'&limit=100')).json().catch(()=>({messages:[]}));
+    if(d.messages && d.messages.length){
+      chat.innerHTML='';
+      for(const m of d.messages){
+        addMsg(m.role === 'user' ? '你' : '旅行出行助手', md(m.content),
+               m.role === 'user' ? 'user' : 'bot');
+      }
+      chat.scrollTop = chat.scrollHeight;
+      const cur = ($('#convs').querySelector('.conv.on'));
+      if(cur){ currentTitle = cur.dataset.title || '新对话'; $('#convTitle').textContent = currentTitle; }
+      return;
+    }
+  }
+  chat.innerHTML='';
+  addMsg('旅行出行助手', GREETING, 'bot');
+})();
+</script>
+</body>
+</html>
